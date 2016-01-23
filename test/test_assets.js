@@ -99,6 +99,27 @@ describe("assets", function () {
     testutils.assertCompiles(eg, expected, done);
   });
 
+  it("should import own assets from within a module", function (done) {
+    var expected = "TODO";
+    var rootDir = testutils.fixtureDirectory("app_assets");
+    var eg = new Eyeglass({
+      data: "@import 'mod-one';",
+      eyeglass: {
+        root: rootDir,
+        engines: {
+          sass: sass
+        }
+      }
+    });
+
+    // asset-url("images/foo.png") => url(public/assets/images/foo.png);
+    eg.assets.addSource(rootDir, {pattern: "images/**/*"});
+    // asset-url("fonts/foo.ttf") => url(public/assets/fonts/foo.ttf);
+    eg.assets.addSource(rootDir, {pattern: "fonts/**/*"});
+
+    testutils.assertCompiles(eg, expected, done);
+  });
+
   it("should allow httpPrefix for app assets", function (done) {
     var expected = ".test {\n" +
                    "  background: url(/assets/images/foo.png);\n" +
