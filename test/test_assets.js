@@ -2,10 +2,12 @@
 
 var sass = require("node-sass");
 var path = require("path");
-var Eyeglass = require("../lib");
 var testutils = require("./testutils");
 var assert = require("assert");
 var fse = require("fs-extra");
+
+var Eyeglass = require("../lib");
+var AssetsSource = require("../lib/assets/AssetsSource");
 
 describe("assets", function () {
 
@@ -557,13 +559,8 @@ describe("assets", function () {
 
   it("can pretty print an asset path entry", function(done) {
     var rootDir = testutils.fixtureDirectory("app_assets");
-    var eyeglass = new Eyeglass({
-      eyeglass: {
-        root: rootDir
-      }
-    });
-    var AssetPathEntry = eyeglass.assets.AssetPathEntry;
-    var entry = new AssetPathEntry(rootDir, {
+
+    var entry = new AssetsSource(rootDir, {
       pattern: "images/**/*"
     });
     assert.equal(entry.toString(), rootDir + "/images/**/*");
@@ -572,13 +569,8 @@ describe("assets", function () {
 
   it("can assign custom glob opts to an asset path entry", function(done) {
     var rootDir = testutils.fixtureDirectory("app_assets");
-    var eyeglass = new Eyeglass({
-      eyeglass: {
-        root: rootDir
-      }
-    });
-    var AssetPathEntry = eyeglass.assets.AssetPathEntry;
-    var entry = new AssetPathEntry(rootDir, {
+
+    var entry = new AssetsSource(rootDir, {
       pattern: "images/**/*",
       globOpts: {dot: true}
     });
@@ -588,14 +580,9 @@ describe("assets", function () {
 
   it("asset path entries must be directories", function(done) {
     var rootDir = testutils.fixtureDirectory("app_assets");
-    var eyeglass = new Eyeglass({
-      eyeglass: {
-        root: rootDir
-      }
-    });
-    var AssetPathEntry = eyeglass.assets.AssetPathEntry;
+
     assert.throws(function() {
-      var ape = new AssetPathEntry(path.join(rootDir, "package.json"));
+      var ape = new AssetsSource(path.join(rootDir, "package.json"));
       ape = ape; // TODO: Why is this not returned or used?
     });
     done();
