@@ -650,4 +650,29 @@ describe("assets", function () {
 
     testutils.assertCompiles(eg, expected, done);
   });
+
+  it("should normalize platform separators as well as directory traversal", function (done) {
+    var input = "@import 'assets'; div { background-image: asset-url('images\\\\foo.png');" +
+                "background-image: asset-url('images/bar/../foo.png'); }";
+    var expected = "div {\n  background-image: url(/images/foo.png);\n" +
+                   "  background-image: url(/images/foo.png); }\n";
+    var rootDir = testutils.fixtureDirectory("app_assets");
+    var eg = new Eyeglass({
+      data: input,
+      eyeglass: {
+        root: rootDir,
+        assets: {
+          sources: [{
+            directory: rootDir,
+            pattern: "images/**/*"
+          }]
+        },
+        engines: {
+          sass: sass
+        }
+      }
+    });
+
+    testutils.assertCompiles(eg, expected, done);
+  });
 });
