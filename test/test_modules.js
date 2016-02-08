@@ -1,6 +1,6 @@
 "use strict";
 
-var EyeglassModules = require("../lib/util/eyeglass_modules");
+var EyeglassModules = require("../lib/modules/EyeglassModules");
 var fs = require("fs");
 var path = require("path");
 var glob = require("glob");
