@@ -101,9 +101,15 @@ describe("assets", function () {
     testutils.assertCompiles(eg, expected, done);
   });
 
-  // TODO - this should pass but the module importer is currently broken pending #123
-  it.skip("should import own assets from within a module", function (done) {
-    var expected = "TODO";
+  it("should import own assets from within a module", function (done) {
+    var expected = [
+      "/* index */",
+      ".test {",
+      "  background: url(/mod-one/mod-one.jpg);",
+      "  background: url(/mod-one/subdir/sub.png); }\n",
+      ".all-assets {",
+      "  mod-assets: \"mod-one/mod-one.jpg\", \"mod-one/subdir/sub.png\"; }\n"
+    ].join("\n");
     var rootDir = testutils.fixtureDirectory("app_assets");
     var eg = new Eyeglass({
       data: "@import 'mod-one';",
