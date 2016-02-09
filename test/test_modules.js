@@ -63,11 +63,4 @@ describe("EyeglassModules", function () {
       });
     });
   });
-
-  it("should find a module given a path", function() {
-    var modules = new EyeglassModules(path.join(fixtureDir, "has_modules"));
-    var moduleB = modules.find("module_b");
-    var moduleBPrime = modules.findByPath(moduleB.path);
-    assert.deepEqual(moduleB, moduleBPrime);
-  });
 });
