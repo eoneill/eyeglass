@@ -579,6 +579,33 @@ describe("assets", function () {
     });
   });
 
+  it("should handle undefined file being passed to install", function (done) {
+    var rootDir = testutils.fixtureDirectory("app_assets");
+    var expected = ".test {\n" +
+                   "  background: url(\"/images/foo.png\");\n" +
+                   "  background: url(\"/fonts/foo.woff\"); }\n";
+    var eyeglass = new Eyeglass({
+      file: path.join(rootDir, "sass", "app_assets.scss"),
+      eyeglass: {
+        root: rootDir,
+        assets: {
+          sources: [
+            {directory: rootDir, pattern: "images/**/*"},
+            {directory: rootDir, pattern: "fonts/**/*"}
+          ]
+        },
+        engines: {
+          sass: sass
+        }
+      }
+    });
+
+    eyeglass.assets.installer(function(assetFile, assetUri, oldInstaller, finished) {
+     finished(null, undefined);
+    });
+    testutils.assertCompiles(eyeglass, expected, done);
+  });
+
   it("should handle an error in a resolver", function (done) {
     var rootDir = testutils.fixtureDirectory("app_assets");
     var eg = new Eyeglass({
