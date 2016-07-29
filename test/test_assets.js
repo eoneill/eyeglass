@@ -836,13 +836,16 @@ describe("assets", function () {
   });
 
   describe("path separator normalization", function() {
+    function escapeBackslash(str) {
+      return str.replace(/\\/g, "\\\\");
+    }
     var originalEnv = process.env.EYEGLASS_NORMALIZE_PATHS;
     var merge = require("lodash.merge");
     var uriFragments = ["images", "bar", "foo.png"];
     var stdSep = "/";
     var otherSep = path.sep === stdSep ? "\\" : stdSep;
     var otherUri = uriFragments.join(otherSep);
-    var otherUriEscaped = otherUri.replace(/\\/g, "\\\\");
+    var otherUriEscaped = escapeBackslash(otherUri);
     var normalizedUri = uriFragments.join(stdSep);
     var input = "@import 'assets'; /* #{eyeglass-normalize-uri('" + otherUriEscaped + "')} */";
     var rootDir = testutils.fixtureDirectory("app_assets");
@@ -852,7 +855,9 @@ describe("assets", function () {
     }
 
     function test(options, shouldNormalize, done) {
-      var expected = "/* " + (shouldNormalize ? normalizedUri : otherUri) + " */\n";
+      var expected = "/* \""
+      + escapeBackslash(shouldNormalize ? normalizedUri : otherUri)
+      + "\" */\n";
 
       options = merge({
         data: input,
