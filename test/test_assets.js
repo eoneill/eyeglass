@@ -5,6 +5,7 @@ var path = require("path");
 var testutils = require("./testutils");
 var assert = require("assert");
 var fse = require("fs-extra");
+var glob = require("glob");
 
 var Eyeglass = require("../lib");
 var AssetsSource = require("../lib/assets/AssetsSource");
@@ -808,21 +809,24 @@ describe("assets", function () {
 
   it("should support odd character in file names", function (done) {
     process.env.EYEGLASS_NORMALIZE_PATHS = "true";
-    var tests = [
-      {input: "images/foo bar.png", expected: "/images/foo bar.png"},
-      {input: "images/foo%2Fbar.png", expected: "/images/foo%2Fbar.png"},
-      {input: "images/foo%5Cbar.png", expected: "/images/foo%5Cbar.png"},
-      // should allow unicode characters
-      {input: "images/foo☃bar.png", expected: "/images/foo☃bar.png"},
-      {input: "images/foo\\bar.png", expected: "/images/foo\\bar.png"}
-    ];
+    var rootDir = testutils.fixtureDirectory("app_assets_odd_names");
+    var images = glob.sync(path.join(rootDir, "images/**/*"));
+
+    // if the file system path is not a backslash...
+    if (path.sep !== "\\") {
+      // add an extra test case for a file with a backslash in the name
+      var backslashImage = path.join(rootDir, "images/foo\\bar.png");
+      fse.copySync(images[0], backslashImage);
+      images.push(backslashImage);
+    }
+
     var input = "@import 'assets';";
     var expected = "@charset \"UTF-8\";\n";
-    tests.forEach(function(test) {
-      input += "/* #{asset-url('" + escapeBackslash(test.input) + "')} */\n";
-      expected += "/* url(\"" + escapeBackslash(test.expected) + "\") */\n";
+    images.forEach(function(image) {
+      var imagePath = escapeBackslash(image.replace(rootDir, "").replace(/^\//, ""));
+      input += "/* #{asset-url('" + imagePath + "')} */\n";
+      expected += "/* url(\"/" + imagePath + "\") */\n";
     });
-    var rootDir = testutils.fixtureDirectory("app_assets_odd_names");
     var eg = new Eyeglass({
       data: input,
       eyeglass: {
