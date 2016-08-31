@@ -9,6 +9,10 @@ var fse = require("fs-extra");
 var Eyeglass = require("../lib");
 var AssetsSource = require("../lib/assets/AssetsSource");
 
+function escapeBackslash(str) {
+  return str.replace(/\\/g, "\\\\");
+}
+
 describe("assets", function () {
   it("should give an error when an asset is not found", function (done) {
     testutils.assertStderr(function(checkStderr) {
@@ -803,18 +807,25 @@ describe("assets", function () {
   });
 
   it("should support odd character in file names", function (done) {
+    process.env.EYEGLASS_NORMALIZE_PATHS = "true";
     var tests = [
       {input: "images/foo bar.png", expected: "/images/foo bar.png"},
       {input: "images/foo%2Fbar.png", expected: "/images/foo%2Fbar.png"},
       {input: "images/foo%5Cbar.png", expected: "/images/foo%5Cbar.png"},
       // should allow unicode characters
-      {input: "images/foo☃bar.png", expected: "/images/foo☃bar.png"}
+      {input: "images/foo☃bar.png", expected: "/images/foo☃bar.png"},
+      // should preserve backlashes when invoked with `uri-preserve`
+      {input: "images/foo\\bar.png", expected: "/images/foo\\bar.png", preserve: true}
     ];
     var input = "@import 'assets';";
     var expected = "@charset \"UTF-8\";\n";
     tests.forEach(function(test) {
-      input += "/* #{asset-url('" + test.input + "')} */\n";
-      expected += "/* url(\"" + test.expected + "\") */\n";
+      input += "/* #{asset-url(";
+      if (test.preserve) {
+        input += "uri-preserve";
+      }
+      input += "('" + escapeBackslash(test.input) + "'))} */\n";
+      expected += "/* url(\"" + escapeBackslash(test.expected) + "\") */\n";
     });
     var rootDir = testutils.fixtureDirectory("app_assets_odd_names");
     var eg = new Eyeglass({
@@ -836,9 +847,6 @@ describe("assets", function () {
   });
 
   describe("path separator normalization", function() {
-    function escapeBackslash(str) {
-      return str.replace(/\\/g, "\\\\");
-    }
     var originalEnv = process.env.EYEGLASS_NORMALIZE_PATHS;
     var merge = require("lodash.merge");
     var uriFragments = ["images", "bar", "foo.png"];
