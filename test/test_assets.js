@@ -814,17 +814,12 @@ describe("assets", function () {
       {input: "images/foo%5Cbar.png", expected: "/images/foo%5Cbar.png"},
       // should allow unicode characters
       {input: "images/foo☃bar.png", expected: "/images/foo☃bar.png"},
-      // should preserve backlashes when invoked with `uri-preserve`
-      {input: "images/foo\\bar.png", expected: "/images/foo\\bar.png", preserve: true}
+      {input: "images/foo\\bar.png", expected: "/images/foo\\bar.png"}
     ];
     var input = "@import 'assets';";
     var expected = "@charset \"UTF-8\";\n";
     tests.forEach(function(test) {
-      input += "/* #{asset-url(";
-      if (test.preserve) {
-        input += "uri-preserve";
-      }
-      input += "('" + escapeBackslash(test.input) + "'))} */\n";
+      input += "/* #{asset-url('" + escapeBackslash(test.input) + "')} */\n";
       expected += "/* url(\"" + escapeBackslash(test.expected) + "\") */\n";
     });
     var rootDir = testutils.fixtureDirectory("app_assets_odd_names");

@@ -60,6 +60,7 @@ $eg-registered-assets: () !default;
 
 // Returns a URL to the asset wrapped.
 @function asset-uri($relative-path) {
+  $relative-path: eyeglass-uri-preserve($relative-path);
   @return quote(
     eyeglass-uri-restore(
       eyeglass-asset-uri($eg-registered-assets, unquote($relative-path))
@@ -92,8 +93,4 @@ $eg-registered-assets: () !default;
     $asset-urls: append($asset-urls, $url, comma);
   }
   @return $asset-urls;
-}
-
-@function uri-preserve($uri) {
-  @return eyeglass-uri-preserve($uri);
 }
