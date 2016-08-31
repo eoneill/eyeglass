@@ -815,7 +815,7 @@ describe("assets", function () {
     // if the file system path is not a backslash...
     if (path.sep !== "\\") {
       // add an extra test case for a file with a backslash in the name
-      var backslashImage = path.join(rootDir, "images/foo\\bar.png");
+      var backslashImage = path.join(rootDir, "images/foo\\bar.gitignore.png");
       fse.copySync(images[0], backslashImage);
       images.push(backslashImage);
     }
