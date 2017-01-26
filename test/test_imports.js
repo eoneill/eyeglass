@@ -522,6 +522,19 @@ describe("eyeglass importer", function () {
     testutils.assertCompiles(options, expected, done);
   });
 
+  it("should import valid npm module names (#161)", function(done) {
+    var rootDir = testutils.fixtureDirectory("issue-161");
+
+    var options = {
+      data: '@import "prefix.tool-name";',
+      eyeglass: {
+        root: rootDir
+      }
+    };
+    var expected = "/* prefix.tool-name */\n";
+    testutils.assertCompiles(options, expected, done);
+  });
+
   describe("manual modules", function() {
     it("should support manually added module", function(done) {
       var manualModule = require(testutils.fixtureDirectory("manual_module"));

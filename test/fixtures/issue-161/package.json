@@ -1,0 +1,7 @@
+{
+  "name": "issue-161",
+  "private": true,
+  "dependencies": {
+    "prefix.tool-name": "*"
+  }
+}
